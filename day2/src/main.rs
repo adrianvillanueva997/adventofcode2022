@@ -34,7 +34,7 @@ fn get_option_score(human_play: i32) -> i32 {
 /// 3 => draw
 /// 6 => win
 fn calculate_round_score(human_play: i32, ai_play: i32) -> Result<i32, Error> {
-    let mut score_round = 0;
+    let score_round = 0;
     // score_round += get_option_score(human_play);
     let options = (human_play, ai_play);
     match options {
