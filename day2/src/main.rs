@@ -2,53 +2,62 @@ use std::{
     fs::File,
     io::{BufRead, BufReader, Error, ErrorKind::InvalidInput},
 };
+#[derive(Copy, Clone, PartialEq, Eq)]
+enum Options {
+    Rock,
+    Paper,
+    Scissors,
+}
 
-fn convert_ai_input(ai_play: &str) -> Result<i32, Error> {
+fn convert_ai_input(ai_play: &str) -> Result<Options, Error> {
     match ai_play {
-        "A" => Ok(1),
-        "B" => Ok(2),
-        "C" => Ok(3),
+        "A" => Ok(Options::Rock),
+        "B" => Ok(Options::Paper),
+        "C" => Ok(Options::Scissors),
         _ => Err(Error::new(InvalidInput, "Invalid input")),
     }
 }
 
-fn convert_human_input(human_play: &str) -> Result<i32, Error> {
+fn convert_human_input(human_play: &str) -> Result<Options, Error> {
     match human_play {
-        "X" => Ok(1), //  i lose
-        "Y" => Ok(2), //  i draw
-        "Z" => Ok(3), //  i win
+        "X" => Ok(Options::Rock),     //  i lose
+        "Y" => Ok(Options::Paper),    //  i draw
+        "Z" => Ok(Options::Scissors), //  i win
         _ => Err(Error::new(InvalidInput, "Invalid Input!")),
     }
 }
 
-fn get_option_score(human_play: i32) -> i32 {
+fn get_option_score(human_play: Options) -> i32 {
     match human_play {
-        1 => 1,
-        2 => 2,
-        3 => 3,
-        _ => 0,
+        Options::Rock => 1,
+        Options::Paper => 2,
+        Options::Scissors => 3,
     }
 }
-/// 1=> rock 2=>paper 3=> scissors
+
 /// 0 => lose
 /// 3 => draw
 /// 6 => win
-fn calculate_round_score(human_play: i32, ai_play: i32) -> Result<i32, Error> {
+fn calculate_round_score(human_play: Options, ai_play: Options) -> Result<i32, Error> {
     let score_round = 0;
     // score_round += get_option_score(human_play);
     let options = (human_play, ai_play);
     match options {
-        (1, 1) => Ok(score_round + get_option_score(3)), // lose
-        (1, 2) => Ok(score_round + get_option_score(1)), // lose
-        (1, 3) => Ok(score_round + get_option_score(2)), // lose
-        (2, 1) => Ok(score_round + 3 + get_option_score(ai_play)), // draw
-        (2, 2) => Ok(score_round + 3 + get_option_score(ai_play)), // draw
-        (2, 3) => Ok(score_round + 3 + get_option_score(ai_play)), // draw
-        (3, 1) => Ok(score_round + 6 + get_option_score(2)),
-        (3, 2) => Ok(score_round + 6 + get_option_score(3)),
-        (3, 3) => Ok(score_round + 6 + get_option_score(1)),
-
-        _ => Err(Error::new(InvalidInput, "Something happened")),
+        (Options::Rock, Options::Rock) => Ok(score_round + get_option_score(Options::Scissors)), // lose
+        (Options::Rock, Options::Paper) => Ok(score_round + get_option_score(Options::Rock)), // lose
+        (Options::Rock, Options::Scissors) => Ok(score_round + get_option_score(Options::Paper)), // lose
+        (Options::Paper, Options::Rock) => Ok(score_round + 3 + get_option_score(ai_play)), // draw
+        (Options::Paper, Options::Paper) => Ok(score_round + 3 + get_option_score(ai_play)), // draw
+        (Options::Paper, Options::Scissors) => Ok(score_round + 3 + get_option_score(ai_play)), // draw
+        (Options::Scissors, Options::Rock) => {
+            Ok(score_round + 6 + get_option_score(Options::Paper))
+        }
+        (Options::Scissors, Options::Paper) => {
+            Ok(score_round + 6 + get_option_score(Options::Scissors))
+        }
+        (Options::Scissors, Options::Scissors) => {
+            Ok(score_round + 6 + get_option_score(Options::Rock))
+        }
     }
 }
 
