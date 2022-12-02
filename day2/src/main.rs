@@ -14,9 +14,9 @@ fn convert_ai_input(ai_play: &str) -> Result<i32, Error> {
 
 fn convert_human_input(human_play: &str) -> Result<i32, Error> {
     match human_play {
-        "X" => Ok(1),
-        "Y" => Ok(2),
-        "Z" => Ok(3),
+        "X" => Ok(1), //  i lose
+        "Y" => Ok(2), //  i draw
+        "Z" => Ok(3), //  i win
         _ => Err(Error::new(InvalidInput, "Invalid Input!")),
     }
 }
@@ -30,20 +30,23 @@ fn get_option_score(human_play: i32) -> i32 {
     }
 }
 /// 1=> rock 2=>paper 3=> scissors
+/// 0 => lose
+/// 3 => draw
+/// 6 => win
 fn calculate_round_score(human_play: i32, ai_play: i32) -> Result<i32, Error> {
     let mut score_round = 0;
-    score_round += get_option_score(human_play);
+    // score_round += get_option_score(human_play);
     let options = (human_play, ai_play);
     match options {
-        (1, 1) => Ok(score_round + 3),
-        (1, 2) => Ok(score_round),
-        (1, 3) => Ok(score_round + 6),
-        (2, 1) => Ok(score_round + 6),
-        (2, 2) => Ok(score_round + 3),
-        (2, 3) => Ok(score_round),
-        (3, 1) => Ok(score_round),
-        (3, 2) => Ok(score_round + 6),
-        (3, 3) => Ok(score_round + 3),
+        (1, 1) => Ok(score_round + get_option_score(3)), // lose
+        (1, 2) => Ok(score_round + get_option_score(1)), // lose
+        (1, 3) => Ok(score_round + get_option_score(2)), // lose
+        (2, 1) => Ok(score_round + 3 + get_option_score(ai_play)), // draw
+        (2, 2) => Ok(score_round + 3 + get_option_score(ai_play)), // draw
+        (2, 3) => Ok(score_round + 3 + get_option_score(ai_play)), // draw
+        (3, 1) => Ok(score_round + 6 + get_option_score(2)),
+        (3, 2) => Ok(score_round + 6 + get_option_score(3)),
+        (3, 3) => Ok(score_round + 6 + get_option_score(1)),
 
         _ => Err(Error::new(InvalidInput, "Something happened")),
     }
