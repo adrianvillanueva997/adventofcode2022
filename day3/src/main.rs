@@ -18,42 +18,36 @@ fn main() {
     let reader = BufReader::new(file);
     let lines = reader.lines();
     let mut priority = 0;
+    let mut items: Vec<String> = Vec::new();
     for line in lines {
         let line_content = line.unwrap();
-        let (first, second) = line_content.split_at(line_content.len() / 2);
-        let first: Vec<char> = first.chars().collect();
-        let second: Vec<char> = second.chars().collect();
+        items.push(line_content);
+    }
+    let items = items.chunks(3);
+    for chunk in items {
         let mut matches = false;
         let mut i = 0;
-        let mut j = 0;
+        let first = chunk[0].clone();
+        let second = chunk[1].clone();
+        let third = chunk[2].clone();
         while !matches && i < first.len() {
-            let first_current_value = first[i];
-            while !matches && j < second.len() {
-                let second_current_value = second[j];
-                if first_current_value == second_current_value {
-                    if first_current_value.is_lowercase() {
-                        let lower_priority = ASCII_LOWER
-                            .iter()
-                            .position(|&i| i == first_current_value)
-                            .unwrap() as i32
-                            + 1;
-                        priority += lower_priority;
-                    }
-                    if first_current_value.is_uppercase() {
-                        let upper_priority = ASCII_UPPER
-                            .iter()
-                            .position(|&i| i == first_current_value)
-                            .unwrap() as i32
+            let current_char = first.chars().nth(i).unwrap();
+            if second.contains(current_char) && third.contains(current_char) {
+                matches = true;
+                if current_char.is_lowercase() {
+                    let lower_priority =
+                        ASCII_LOWER.iter().position(|&i| i == current_char).unwrap() as i32 + 1;
+                    priority += lower_priority;
+                }
+                if current_char.is_uppercase() {
+                    let upper_priority =
+                        ASCII_UPPER.iter().position(|&i| i == current_char).unwrap() as i32
                             + 1
                             + 26;
-                        priority += upper_priority;
-                    }
-                    matches = true;
+                    priority += upper_priority;
                 }
-                j += 1;
             }
             i += 1;
-            j = 0;
         }
     }
     println!("{}", priority);
