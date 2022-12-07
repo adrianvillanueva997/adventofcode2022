@@ -25,7 +25,9 @@ impl Crates {
         crate_origin: usize,
         crate_destination: usize,
     ) -> Crates {
-        let element_deleted = self.list[crate_origin].swap_remove(0);
+        let index_origin = self.list[crate_origin].len() - 1;
+        let element_deleted = self.list[crate_origin].swap_remove(index_origin);
+        println!("{}", element_deleted);
         self.list[crate_destination].push(element_deleted);
         self
     }
@@ -42,8 +44,11 @@ fn main() {
         vec!["H", "T", "P", "M", "Q", "B", "W"],
         vec!["F", "S", "W", "T"],
         vec!["N", "C", "R"],
+        // vec!["Z", "N"],
+        // vec!["M", "C", "D"],
+        // vec!["P"],
     ]);
-    // println!("{:?}", crates.list);
+    println!("{:?}", crates.list);
     let file = File::open("input.txt").unwrap();
     let reader = BufReader::new(file);
     let lines = reader.lines();
@@ -59,11 +64,11 @@ fn main() {
         let crate_destination: usize = line[5].parse().unwrap();
         if crates_to_move == 1 {
             crates = crates.move_crates(crate_origin - 1, crate_destination - 1);
-            // println!("{:?}", crates.list);
+            println!("{:?}", crates.list);
         } else {
             for _ in 0..crates_to_move {
                 crates = crates.move_crates(crate_origin - 1, crate_destination - 1);
-                // println!("{:?}", crates.list);
+                println!("{:?}", crates.list);
             }
         }
     }
