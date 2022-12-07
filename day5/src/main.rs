@@ -26,9 +26,27 @@ impl Crates {
         crate_destination: usize,
     ) -> Crates {
         let index_origin = self.list[crate_origin].len() - 1;
-        let element_deleted = self.list[crate_origin].swap_remove(index_origin);
-        println!("{}", element_deleted);
+        let element_deleted = self.list[crate_origin].remove(index_origin);
         self.list[crate_destination].push(element_deleted);
+        self
+    }
+
+    fn move_multiple_crates(
+        mut self,
+        crate_origin: usize,
+        crate_destination: usize,
+        crates_to_move: usize,
+    ) -> Crates {
+        let mut tmp: Vec<String> = Vec::new();
+        for _ in 0..crates_to_move {
+            let index_origin = self.list[crate_origin].len() - 1;
+            let element_deleted = self.list[crate_origin].remove(index_origin);
+            tmp.push(element_deleted);
+        }
+        for i in (0..tmp.len()).rev() {
+            let element_to_insert = tmp[i].clone();
+            self.list[crate_destination].push(element_to_insert);
+        }
         self
     }
 }
@@ -44,11 +62,7 @@ fn main() {
         vec!["H", "T", "P", "M", "Q", "B", "W"],
         vec!["F", "S", "W", "T"],
         vec!["N", "C", "R"],
-        // vec!["Z", "N"],
-        // vec!["M", "C", "D"],
-        // vec!["P"],
     ]);
-    println!("{:?}", crates.list);
     let file = File::open("input.txt").unwrap();
     let reader = BufReader::new(file);
     let lines = reader.lines();
@@ -57,19 +71,18 @@ fn main() {
         if !line.contains("move") {
             continue;
         }
-        println!("{}", line);
         let line: Vec<&str> = line.split(' ').collect();
-        let crates_to_move: i32 = line[1].parse().unwrap();
+        let crates_to_move: usize = line[1].parse().unwrap();
         let crate_origin: usize = line[3].parse().unwrap();
         let crate_destination: usize = line[5].parse().unwrap();
         if crates_to_move == 1 {
             crates = crates.move_crates(crate_origin - 1, crate_destination - 1);
-            println!("{:?}", crates.list);
         } else {
-            for _ in 0..crates_to_move {
-                crates = crates.move_crates(crate_origin - 1, crate_destination - 1);
-                println!("{:?}", crates.list);
-            }
+            crates = crates.move_multiple_crates(
+                crate_origin - 1,
+                crate_destination - 1,
+                crates_to_move,
+            );
         }
     }
     // println!("{:?}", crates.list);
